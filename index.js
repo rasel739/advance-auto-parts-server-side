@@ -24,6 +24,8 @@ async function run() {
         const database = await client.db('advance-car-parts');
         const carPartsCollection = await database.collection('car-parts-all');
         const addToCartCollection = await database.collection('add-to-cart');
+        const userCollection = await database.collection('user');
+        const userReviewCollection = await database.collection('user-review');
                                                       
         //add-car-parts
         app.post('/addCarParts',async(req,res)=>{
@@ -92,6 +94,80 @@ async function run() {
             const result = await addToCartCollection.find({}).toArray();
 
             res.send(result);
+        })
+
+        //add user login data
+
+        app.post('/userLoginData', async (req, res) => {
+
+            const userData = req.body;
+
+            const result = await userCollection.insertOne(userData);
+
+           res.send(result.acknowledged);
+
+        })
+        //add user login data
+
+        app.put('/userLoginData', async (req, res) => {
+
+            const user = req.body;
+
+            const filter = { name: user.name, email: user.email }
+            
+            const options = { upsert: true }
+            
+            const updateUser = { $set: user }
+
+            const result = await userCollection.updateOne(filter, updateUser, options);
+
+            res.send(result);
+
+        });
+
+        //make admin 
+
+        app.put('/makeAdmin', async (req, res) => {
+
+            const user = req.body;
+
+            const filter = { email: user.email }
+            
+            const admin = { $set: { role: 'admin' } }
+            
+            const result = await userCollection.updateOne(filter, admin);
+            
+            res.send(result);
+           
+        });
+
+        // search admin
+
+        app.get("/userAdmin/:email", async (req, res) => {
+            
+            const email = req.params.email
+
+            const result = await userCollection.find({ email: email }).toArray();
+
+            res.send(result);
+        });
+
+        // add user Review 
+        app.post("/addReview", async (req, res) => {
+
+            const reviewItem = req.body;
+            const result = await userReviewCollection.insertOne(reviewItem);
+
+            res.send(result)
+
+        });
+
+        //get user Review
+        app.get("/getReview", async (req, res) => {
+
+            const result = await userReviewCollection.find({}).toArray();
+
+            res.send(result)
         })
 
     } finally {
