@@ -26,6 +26,7 @@ async function run() {
         const addToCartCollection = await database.collection('add-to-cart');
         const userCollection = await database.collection('user');
         const userReviewCollection = await database.collection('user-review');
+        const populerCollection = await database.collection( "populer_Catagory" );
                                                       
         //add-car-parts
         app.post('/addCarParts',async(req,res)=>{
@@ -186,6 +187,15 @@ async function run() {
             })
 
             res.send(result.acknowledged)
+        });
+
+        //get populer Catagory
+
+        app.get("/populerCatagory", async (req, res) => {
+            
+            const result = await populerCollection.find({}).toArray();
+
+            res.send(result)
         });
 
     } finally {
