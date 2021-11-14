@@ -40,7 +40,7 @@ async function run() {
             
             const result = await carPartsCollection.find({}).toArray();
 
-            res.send(result)
+            res.send(result.acknowledged)
         })
 
         //get-car-parts single details
@@ -50,7 +50,7 @@ async function run() {
 
             const result = await carPartsCollection.find({ _id: ObjectId(detailsId) }).toArray();
             
-            res.send(result)
+            res.send(result.acknowledged)
 
         })
 
@@ -72,7 +72,7 @@ async function run() {
 
             const result = await addToCartCollection.find({ email: email }).toArray();
             
-            res.send(result)
+            res.send(result.acknowledged)
         });
 
         //delete my Order
@@ -83,7 +83,7 @@ async function run() {
             const result = await addToCartCollection.deleteOne({ _id:id });
 
 
-           res.send(result);
+           res.send(result.acknowledged);
 
         });
 
@@ -93,7 +93,7 @@ async function run() {
             
             const result = await addToCartCollection.find({}).toArray();
 
-            res.send(result);
+            res.send(result.acknowledged);
         })
 
         //add user login data
@@ -121,7 +121,7 @@ async function run() {
 
             const result = await userCollection.updateOne(filter, updateUser, options);
 
-            res.send(result);
+            res.send(result.acknowledged);
 
         });
 
@@ -137,7 +137,7 @@ async function run() {
             
             const result = await userCollection.updateOne(filter, admin);
             
-            res.send(result);
+            res.send(result.acknowledged);
            
         });
 
@@ -149,7 +149,7 @@ async function run() {
 
             const result = await userCollection.find({ email: email }).toArray();
 
-            res.send(result);
+            res.send(result.acknowledged);
         });
 
         // add user Review 
@@ -158,7 +158,7 @@ async function run() {
             const reviewItem = req.body;
             const result = await userReviewCollection.insertOne(reviewItem);
 
-            res.send(result)
+            res.send(result.acknowledged)
 
         });
 
@@ -167,8 +167,26 @@ async function run() {
 
             const result = await userReviewCollection.find({}).toArray();
 
-            res.send(result)
-        })
+            res.send(result.acknowledged)
+        });
+
+        //order update status
+
+        app.put("/updateStatus/:id", async (req, res) => {
+
+            const status = req.body;
+            const id = req.params.id;
+           
+            const result = await addToCartCollection.updateOne({ _id: id }, {
+               
+                $set: {
+                    status: status.status
+                }
+
+            })
+
+            res.send(result.acknowledged)
+        });
 
     } finally {
 
